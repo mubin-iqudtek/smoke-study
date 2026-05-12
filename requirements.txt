@@ -1,0 +1,6 @@
+opencv-python
+numpy
+requests
+imutils
+scipy
+yt-dlp

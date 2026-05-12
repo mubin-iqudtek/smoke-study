@@ -7,14 +7,15 @@ def annotate_frame(
     smoke_mask,
     turbulence_score,
     stagnation,
-    status
+    status,
+    formatted_time,
+    formatted_total
 ):
 
     overlay = frame.copy()
 
     if smoke_mask is not None:
 
-        # Resize mask to original frame size
         resized_mask = cv2.resize(
             smoke_mask.astype(np.uint8),
             (frame.shape[1], frame.shape[0])
@@ -51,6 +52,16 @@ def annotate_frame(
         cv2.FONT_HERSHEY_SIMPLEX,
         1,
         (0, 255, 255),
+        2
+    )
+
+    cv2.putText(
+        overlay,
+        f"TIME: {formatted_time} / {formatted_total}",
+        (20, 160),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        1,
+        (255, 255, 255),
         2
     )
 

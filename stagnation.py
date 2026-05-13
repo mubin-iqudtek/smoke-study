@@ -1,10 +1,15 @@
 import numpy as np
 
-def detect_stagnation(magnitude):
+
+def detect_stagnation(magnitude, smoke_coverage):
 
     if magnitude is None:
         return False
 
-    low_motion = np.mean(magnitude)
+    mean_flow = np.mean(magnitude)
 
-    return low_motion < 0.5
+    # Smoke exists but airflow almost stopped
+    if smoke_coverage > 0.01 and mean_flow < 0.4:
+        return True
+
+    return False

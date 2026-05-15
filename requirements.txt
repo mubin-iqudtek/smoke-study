@@ -4,3 +4,6 @@ requests
 imutils
 scipy
 yt-dlp
+ultralytics
+torch
+torchvision

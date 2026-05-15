@@ -4,7 +4,7 @@ RECOVERY_THRESHOLD = 30
 
 STAGNATION_THRESHOLD = 0.05
 
-OUTPUT_VIDEO = "output/annotated.mp4"
+OUTPUT_VIDEO = "output/annotated/annotated.mp4"
 
 LOG_FILE = "output/logs.txt"
 

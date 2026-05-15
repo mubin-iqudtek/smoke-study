@@ -45,9 +45,10 @@ python main.py --url "https://example.com/video.mp4"
 Generated automatically inside:
 output/
 Files:
-File	Description
-annotated.mp4	Annotated smoke analysis video
-logs.txt	Smoke-study analysis logs
+File Path                             Description
+output/annotated/annotated-X.mp4      Annotated smoke analysis videos (numbered)
+output/screenshots/analysisX/         Failure screenshots for each analysis run
+output/logs.txt                       Smoke-study analysis logs
 
 9. Features
 Smoke flow detection

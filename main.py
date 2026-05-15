@@ -12,6 +12,7 @@ from stagnation import detect_stagnation
 from recovery import calculate_recovery
 from annotator import annotate_frame, mark_failure_area
 from report import log_result
+from detector_ai import classify_frame
 
 from config import (
     FAILURE_SCREENSHOTS_PER_SECOND,
@@ -35,14 +36,23 @@ os.makedirs(
 )
 
 # -----------------------------------
-# UNIQUE ANALYSIS FOLDER
+# UNIQUE ANALYSIS FOLDER & VIDEO NAME
 # -----------------------------------
 analysis_no = 1
+
+output_dir = os.path.dirname(OUTPUT_VIDEO)
+output_filename = os.path.basename(OUTPUT_VIDEO)
+name, ext = os.path.splitext(output_filename)
 
 while os.path.exists(
     os.path.join(
         SCREENSHOTS_DIR,
         f"analysis{analysis_no}"
+    )
+) or os.path.exists(
+    os.path.join(
+        output_dir,
+        f"{name}-{analysis_no}{ext}"
     )
 ):
     analysis_no += 1
@@ -52,13 +62,21 @@ current_screenshots_dir = os.path.join(
     f"analysis{analysis_no}"
 )
 
+OUTPUT_VIDEO = os.path.join(
+    output_dir,
+    f"{name}-{analysis_no}{ext}"
+)
+
 os.makedirs(
     current_screenshots_dir,
     exist_ok=True
 )
 
 print(
-    f"\nStoring screenshots in: {current_screenshots_dir}\n"
+    f"\nStoring screenshots in: {current_screenshots_dir}"
+)
+print(
+    f"Video will be saved as: {OUTPUT_VIDEO}\n"
 )
 
 # -----------------------------------
@@ -479,106 +497,37 @@ while cap.isOpened():
         continue
 
     # -----------------------------------
-    # DEFAULT STATUS
+    # AI STATUS DETERMINATION
     # -----------------------------------
-    status = "PASS"
+    ai_status, confidence = classify_frame(frame)
 
-    observation = (
-        "Uniform airflow observed"
-    )
-
-    # -----------------------------------
-    # SMOKE MISSING
-    # -----------------------------------
-    if (
-        smoke_flow_started
-        and
-        not smoke_present
-    ):
-
+    if not smoke_present and smoke_flow_started:
         status = "WAITING"
-
-        observation = (
-            "Smoke not found in analysis zone"
-        )
-
-    # -----------------------------------
-    # SMOKE DISAPPEARED
-    # -----------------------------------
+        observation = "Smoke not found in analysis zone"
     elif missing_smoke_frames > fps * 2:
-
         status = "FAIL"
-
-        observation = (
-            "Smoke disappeared from analysis zone"
-        )
-
-    # -----------------------------------
-    # WARNING
-    # -----------------------------------
-    elif (
-        avg_turbulence >= 1.2
-        and
-        avg_turbulence < 3.0
-    ):
-
-        status = "WARNING"
-
-        observation = (
-            "Minor airflow disturbance detected"
-        )
-
-    # -----------------------------------
-    # TURBULENCE FAIL
-    # -----------------------------------
-    elif avg_turbulence >= 3.0:
-
-        status = "FAIL"
-
-        observation = (
-            "Severe turbulence detected"
-        )
-
-    # -----------------------------------
-    # STAGNATION FAIL
-    # -----------------------------------
-    elif stagnation:
-
-        status = "FAIL"
-
-        observation = (
-            "Smoke stagnation detected"
-        )
-
-    # -----------------------------------
-    # DEAD AIRFLOW FAIL
-    # -----------------------------------
-    elif (
-        smoke_coverage > 0.01
-        and
-        mean_flow < 0.4
-    ):
-
-        status = "FAIL"
-
-        observation = (
-            "Dead airflow detected"
-        )
-
-    # -----------------------------------
-    # RECOVERY FAIL
-    # -----------------------------------
-    elif (
-        recovery_time is not None
-        and
-        recovery_time > RECOVERY_THRESHOLD
-    ):
-
-        status = "FAIL"
-
-        observation = (
-            "Recovery time exceeded acceptable limit"
-        )
+        observation = "Smoke disappeared from analysis zone"
+    else:
+        # The AI decides the final status
+        status = ai_status
+        
+        # Use traditional CV logic to determine the "Observation" (The Why)
+        if status == "FAIL":
+            if stagnation:
+                observation = "Smoke stagnation detected (AI Confirmed)"
+            elif avg_turbulence >= 3.0:
+                observation = "Severe turbulence detected (AI Confirmed)"
+            elif mean_flow < 0.4:
+                observation = "Dead airflow detected (AI Confirmed)"
+            else:
+                observation = f"Irregular airflow pattern detected (Confidence: {confidence:.2f})"
+        else:
+            if avg_turbulence >= 1.2:
+                status = "WARNING"
+                observation = "Minor airflow disturbance (AI cautious)"
+            else:
+                status = "PASS"
+                observation = "Uniform airflow observed (AI Confirmed)"
 
     # -----------------------------------
     # TIME FORMATTING

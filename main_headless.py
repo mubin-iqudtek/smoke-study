@@ -1,18 +1,6 @@
-# -----------------------------------------------------------------------------
-# MAIN ANALYSIS ORCHESTRATOR
-# -----------------------------------------------------------------------------
-# This is the entry point of the application.
-# It coordinates all other modules to perform a full smoke study:
-# 1. Video Input: Handles local files or YouTube downloads.
-# 2. Triggering: Waits for smoke release before starting analysis.
-# 3. Processing: Calls detector, AI, and physical metrics modules.
-# 4. Output: Saves the annotated video, logs, and failure screenshots.
-# -----------------------------------------------------------------------------
-
 import cv2
 import argparse
 import numpy as np
-
 import os
 import sys
 
@@ -49,7 +37,6 @@ os.makedirs(
 # -----------------------------------
 # UNIQUE ANALYSIS FOLDER & VIDEO NAME
 # -----------------------------------
-# Ensures each run gets a new analysisX folder and a unique video filename
 analysis_no = 1
 
 output_dir = os.path.dirname(OUTPUT_VIDEO)
@@ -255,7 +242,6 @@ while cap.isOpened():
     # -----------------------------------
     # SMOKE RELEASE DETECTION
     # -----------------------------------
-    # This logic waits for significant movement (smoke release) before starting analysis
     if not smoke_release_detected:
 
         gray = cv2.cvtColor(
@@ -331,15 +317,8 @@ while cap.isOpened():
             2
         )
 
-        cv2.imshow(
-            "Smoke Study Analysis",
-            waiting_frame
-        )
-
+        # Headless: cv2.imshow removed
         out.write(waiting_frame)
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
 
         frame_no += 1
 
@@ -348,7 +327,6 @@ while cap.isOpened():
     # -----------------------------------
     # SMOKE DETECTION
     # -----------------------------------
-    # Uses Optical Flow to find the moving smoke
     smoke_mask, flow, magnitude = detect_smoke(frame)
 
     if magnitude is None:
@@ -365,15 +343,8 @@ while cap.isOpened():
             2
         )
 
-        cv2.imshow(
-            "Smoke Study Analysis",
-            waiting_frame
-        )
-
+        # Headless: cv2.imshow removed
         out.write(waiting_frame)
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
 
         frame_no += 1
 
@@ -426,7 +397,6 @@ while cap.isOpened():
     # -----------------------------------
     # ANALYSIS
     # -----------------------------------
-    # Physics calculations
     turbulence_score = calculate_turbulence(
         magnitude
     )
@@ -443,7 +413,6 @@ while cap.isOpened():
     # -----------------------------------
     # TURBULENCE SMOOTHING
     # -----------------------------------
-    # Use a sliding window of 10 frames to avoid flickering results
     turbulence_history.append(
         turbulence_score
     )
@@ -500,13 +469,7 @@ while cap.isOpened():
 
         out.write(annotated)
 
-        cv2.imshow(
-            "Smoke Study Analysis",
-            annotated
-        )
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        # Headless: cv2.imshow removed
 
         frame_no += 1
 
@@ -515,7 +478,6 @@ while cap.isOpened():
     # -----------------------------------
     # AI STATUS DETERMINATION
     # -----------------------------------
-    # The AI (YOLOv8) makes the final decision on PASS/FAIL
     ai_status, confidence = classify_frame(frame)
 
     if not smoke_present and smoke_flow_started:
@@ -590,7 +552,6 @@ while cap.isOpened():
     # -----------------------------------
     # FRAME ANNOTATION
     # -----------------------------------
-    # Draws the HUD and HUD boxes on the frame
     annotated = annotate_frame(
         frame,
         smoke_mask,
@@ -667,17 +628,7 @@ while cap.isOpened():
                     f"Failed to save failure screenshot: {screenshot_path}"
                 )
 
-    # -----------------------------------
-    # LIVE PREVIEW
-    # -----------------------------------
-    cv2.imshow(
-        "Smoke Study Analysis",
-        annotated
-    )
-
-    # EXIT
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    # Headless: cv2.imshow removed
 
     frame_no += 1
 

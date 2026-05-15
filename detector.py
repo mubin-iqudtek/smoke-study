@@ -1,3 +1,14 @@
+# -----------------------------------------------------------------------------
+# SMOKE DETECTOR MODULE (TRADITIONAL CV)
+# -----------------------------------------------------------------------------
+# This file is responsible for the "Physical Analysis" of the smoke.
+# It handles:
+# 1. Image Pre-processing (Resizing, Gray-scaling, Blurring).
+# 2. Optical Flow Calculation (Farneback Algorithm) to track movement.
+# 3. Generating a "Smoke Mask" based on motion magnitude.
+# 4. Providing raw flow data (speed and direction) for further diagnosis.
+# -----------------------------------------------------------------------------
+
 import cv2
 import numpy as np
 

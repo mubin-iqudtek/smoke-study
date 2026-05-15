@@ -1,11 +1,23 @@
+# -----------------------------------------------------------------------------
+# ANNOTATOR MODULE
+# -----------------------------------------------------------------------------
+# This file is responsible for all the "Visual Work" in the project.
+# It handles:
+# 1. Drawing the Status HUD (PASS/FAIL, Turbulence, Time).
+# 2. Painting flow vectors (arrows) on the screen to show smoke direction.
+# 3. Drawing red boxes around "Failure Areas" for screenshots.
+# 4. Creating the final annotated video frames.
+# -----------------------------------------------------------------------------
+
 import cv2
 import numpy as np
 
 
 def mark_failure_area(frame, smoke_mask, label="DEFECT AREA"):
-
+    # Creates a copy of the frame to draw on, leaving the original untouched.
     highlighted = frame.copy()
 
+    # If there is no smoke mask, draw a simple red rectangle across the whole image.
     if smoke_mask is None:
 
         cv2.rectangle(

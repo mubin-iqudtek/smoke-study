@@ -1,71 +1,131 @@
-Smoke Study Analysis System — Setup & Run Guide
+# Smoke Study Analysis System
 
-1. Clone Repository
-git clone repo-url
-cd smoke-study-new
+A professional-grade, AI-driven airflow visualization and analysis system. This project uses a **Hybrid Intelligence** approach—combining traditional Fluid Dynamics principles with Deep Learning (YOLOv8)—to evaluate smoke studies in controlled environments like cleanrooms and laboratories.
 
-3. Install Python 3.11
-Ubuntu/Linux:
-sudo apt update
-sudo apt install python3.11 python3.11-venv ffmpeg -y
+---
 
-Verify:
-python3.11 --version
+## 🚀 Key Features
 
-Expected:
-Python 3.11.x
+*   **Hybrid AI-Physics Engine**: Combines YOLOv8 image classification with Optical Flow physics.
+*   **Laminar Flow Analysis**: Detects unidirectional flow patterns and identifies back-mixing.
+*   **Turbulence Detection**: Calculates flow angle variance to identify chaotic air patterns.
+*   **Stagnation Zone Mapping**: Automatically flags "Dead Zones" where air is not moving effectively.
+*   **Recovery Time Measurement**: Timestamps how long it takes for the room to clear contaminants.
+*   **Automated PASS/FAIL Reporting**: Generates instant status reports based on professional safety standards.
+*   **Visual HUD & Annotation**: Produces annotated videos with real-time flow vectors and failure boxes.
 
-3. Create Virtual Environment
-python3.11 -m venv venv
+---
 
-4. Activate Virtual Environment
-Linux/macOS:
-source venv/bin/activate
+## 📦 Tech Stack & Libraries
 
-Windows:
-venv\Scripts\activate
+The system leverages several powerful libraries to perform high-speed analysis:
 
-Expected:
-(venv)
+| Library | Primary Use Case |
+| :--- | :--- |
+| **OpenCV (`cv2`)** | **Core Vision**: Handles video reading/writing, image preprocessing, and the Farneback Optical Flow algorithm. |
+| **Ultralytics (`YOLOv8`)** | **Artificial Intelligence**: Runs the deep learning classification model to decide PASS/FAIL status based on visual patterns. |
+| **NumPy (`np`)** | **Mathematics**: Performs high-speed matrix calculations on flow vectors, turbulence variance, and smoke density. |
+| **yt-dlp** | **Video Sourcing**: Robustly downloads and merges video/audio from YouTube and other video platforms. |
+| **Requests** | **Networking**: Streams and downloads direct video URLs from external servers. |
 
-5. Install Dependencies
-pip install --upgrade pip
+---
+
+## 🛠️ System Architecture
+
+The project is modular and organized by responsibility:
+
+| Module | Responsibility |
+| :--- | :--- |
+| **`main.py`** | The central orchestrator that manages the video stream and logic flow. |
+| **`detector_ai.py`** | The "Brain"—runs the YOLOv8 model for visual classification. |
+| **`detector.py`** | The "Physicist"—calculates Optical Flow and movement magnitude. |
+| **`annotator.py`** | The "Artist"—draws the HUD, flow arrows, and failure rectangles. |
+| **`dataset_generator.py`**| The "Self-Learner"—extracts and auto-labels data for future AI training. |
+| **`config.py`** | The "Control Center"—stores all thresholds (Turbulence, Stagnation, etc.). |
+
+---
+
+## ⚙️ Installation & Setup
+
+### 1. Prerequisites
+*   Python 3.11+
+*   FFmpeg (required for video processing)
+*   Virtual Environment (recommended)
+
+### 2. Setup Steps
+```bash
+# Clone the repository
+git clone <repo-url>
+cd smoke-study-python
+
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
+pip install ultralytics  # Ensure YOLOv8 engine is installed
+```
 
-6. Verify FFmpeg Installation
-ffmpeg -version
+---
 
-7. Run Smoke Study Analysis
-Using YouTube URL:
+## 📖 Usage Guide
+
+### Running an Analysis
+You can process videos from YouTube, direct links, or local files.
+
+```bash
+# Analyze a YouTube Video
 python main.py --url "https://youtu.be/lhQ6XNXNwdY"
-Using direct MP4 URL:
-python main.py --url "https://example.com/video.mp4"
 
-8. Output Files
-Generated automatically inside:
-output/
-Files:
-File Path                             Description
-output/annotated/annotated-X.mp4      Annotated smoke analysis videos (numbered)
-output/screenshots/analysisX/         Failure screenshots for each analysis run
-output/logs.txt                       Smoke-study analysis logs
+# Analyze a Local File
+python main.py --video "training-video/dynamic.mp4"
+```
 
-9. Features
-Smoke flow detection
-Optical flow analysis
-Turbulence detection
-Stagnation zone detection
-Recovery time analysis
-Automated observations
-PASS/FAIL evaluation
-Annotated output video
-YouTube + direct URL support
+### Self-Learning / Training New Data
+If you have new footage and want to expand the AI's knowledge:
+1. Place videos in the `training-video/` folder.
+2. Run the dataset generator:
+```bash
+python dataset_generator.py
+```
+This will automatically extract frames and label them into `dataset/train` and `dataset/val` folders based on the current physical logic.
 
-11. Common Fixes
-yt-dlp Error
-Run:
-pip install -U yt-dlp
+---
 
+## 📊 Understanding the "Rules of Flow"
 
-Final Run:
-python main.py --url "https://youtu.be/lhQ6XNXNwdY"
+The system evaluates a "PASS" or "FAIL" based on these configurable rules in `config.py`:
+
+*   **Turbulence (`TURBULENCE_THRESHOLD`)**: 
+    *   **Unit**: Normalized Score (0.0 - 1.0)
+    *   **Meaning**: Measures chaotic movement (Angle Variance). 0.0 is perfect laminar flow; 1.0 is total turbulence.
+*   **Recovery (`RECOVERY_THRESHOLD`)**: 
+    *   **Unit**: Seconds (s)
+    *   **Meaning**: The maximum time allowed for smoke to clear the area. Defaults to 30s per industry standards.
+*   **Stagnation (`STAGNATION_THRESHOLD`)**: 
+    *   **Unit**: Pixels per Frame (Speed Index)
+    *   **Meaning**: The minimum speed required. If smoke moves slower than 0.05 px/frame, it identifies a dangerous "Dead Zone."
+
+---
+
+## 📂 Project Structure
+
+```text
+.
+├── training-video/    # Input videos for analysis/training
+├── output/            # Results generated by the system
+│   ├── annotated/     # Final videos with HUD and vectors
+│   ├── screenshots/   # Red-boxed failure points for manual review
+│   └── logs.txt       # Detailed PASS/FAIL timestamps
+├── runs/              # AI training weights (YOLOv8)
+├── dataset/           # Auto-generated images for self-learning
+├── config.py          # Sensitivity settings and file paths
+└── main.py            # Main entry point
+```
+
+---
+
+## 📝 Common Fixes
+*   **`yt-dlp` Error**: If YouTube downloads fail, run `pip install -U yt-dlp`.
+*   **Headless Environment**: If running on a server without a display, use `main_headless.py` to avoid OpenCV GUI errors.

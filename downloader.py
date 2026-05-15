@@ -1,3 +1,13 @@
+# -----------------------------------------------------------------------------
+# VIDEO DOWNLOADER MODULE
+# -----------------------------------------------------------------------------
+# This file handles fetching videos from external sources.
+# It supports:
+# 1. YouTube URLs: Uses yt-dlp to download and merge video/audio into MP4.
+# 2. Direct MP4 URLs: Uses requests to stream and save the video file.
+# 3. Cache Management: Stores downloaded files in a temporary "cache/" folder.
+# -----------------------------------------------------------------------------
+
 import os
 import uuid
 import requests

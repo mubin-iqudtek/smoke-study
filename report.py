@@ -1,8 +1,17 @@
+# -----------------------------------------------------------------------------
+# REPORTING & LOGGING MODULE
+# -----------------------------------------------------------------------------
+# This file handles the output of the analysis results to the console and files.
+# Logic:
+# 1. It only logs "FAIL" events to keep the logs clean.
+# 2. It limits logging to 5 entries per second to avoid flooding the text file.
+# 3. It writes formatted reports into "output/logs.txt".
+# -----------------------------------------------------------------------------
+
 from config import LOG_FILE
 
-# STORE FAIL COUNTS PER SECOND
+# STORE FAIL COUNTS PER SECOND (To prevent log flooding)
 time_log_counter = {}
-
 
 def log_result(
     frame_no,
@@ -56,10 +65,10 @@ FINAL STATUS      : {status}
 
 """
 
-    # PRINT FAIL LOG
+    # PRINT FAIL LOG TO CONSOLE
     print(log)
 
-    # SAVE FAIL LOG
+    # SAVE FAIL LOG TO FILE
     with open(LOG_FILE, "a") as f:
 
         f.write(log)

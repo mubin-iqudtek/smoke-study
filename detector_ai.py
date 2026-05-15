@@ -1,3 +1,14 @@
+# -----------------------------------------------------------------------------
+# DETECTOR AI MODULE
+# -----------------------------------------------------------------------------
+# This file is the "AI Brain" of the system.
+# It handles:
+# 1. Loading the trained YOLOv8 Classification Model (best.pt).
+# 2. Receiving video frames from the main analysis loop.
+# 3. Running the AI inference to classify the frame as PASS or FAIL.
+# 4. Providing a "Confidence Score" for each prediction.
+# -----------------------------------------------------------------------------
+
 from ultralytics import YOLO
 import cv2
 import os

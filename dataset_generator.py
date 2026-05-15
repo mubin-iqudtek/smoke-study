@@ -1,3 +1,15 @@
+# -----------------------------------------------------------------------------
+# DATASET GENERATOR MODULE
+# -----------------------------------------------------------------------------
+# This file is responsible for "Self-Learning" and Data Preparation.
+# It handles:
+# 1. Scanning the "training-video/" folder for new footage.
+# 2. Extracting individual frames (pictures) from videos at regular intervals.
+# 3. Auto-Labeling each frame as PASS or FAIL using current physical logic.
+# 4. Organizing images into "train" and "val" folders for AI Model training.
+# 5. Preparing the foundation for training the YOLOv8 classification model.
+# -----------------------------------------------------------------------------
+
 import cv2
 import os
 import numpy as np
